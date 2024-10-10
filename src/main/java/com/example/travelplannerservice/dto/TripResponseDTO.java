@@ -26,7 +26,6 @@ public class TripResponseDTO {
         this.endDate = endDate;
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }

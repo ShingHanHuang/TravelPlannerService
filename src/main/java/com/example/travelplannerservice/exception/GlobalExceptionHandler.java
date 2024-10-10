@@ -18,6 +18,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
+    @ExceptionHandler(TripNotFoundException.class)
+    public ResponseEntity<?> handleTripNotFoundException(TripNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(GeneralSecurityException.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneralSecurityException(GeneralSecurityException ex) {
         ApiResponse<Void> response = new ApiResponse<>(false, null, "A security error occurred. Access denied.");

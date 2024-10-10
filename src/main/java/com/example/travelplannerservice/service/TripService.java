@@ -3,6 +3,8 @@ package com.example.travelplannerservice.service;
 import com.example.travelplannerservice.config.SecurityConfig;
 import com.example.travelplannerservice.dao.User;
 import com.example.travelplannerservice.dao.Trip;
+import com.example.travelplannerservice.exception.TripNotFoundException;
+import com.example.travelplannerservice.exception.UserNotFoundException;
 import com.example.travelplannerservice.repository.TripRepository;
 import com.example.travelplannerservice.repository.UserRepository;
 import org.slf4j.Logger;
@@ -26,22 +28,38 @@ public class TripService {
         this.tripRepository = tripRepository;
     }
 
-    public String saveTrip(String userId,Trip trip) {
+    public String saveTrip(String userId, Trip trip) {
         trip.setId(UUID.randomUUID().toString());
-        logger.warn("trip" + trip.toString());
+        logger.debug("Saving trip: {}", trip);
         tripRepository.save(trip);
-
-        // Link trip to user
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(userId).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
         user.getTrips().add(trip);
         userRepository.save(user);
 
         return trip.getId();
     }
 
+    public void deleteTrip(String userId, String tripId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        logger.info("Trip id:{} ", tripId);
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new TripNotFoundException("Trip not found with ID: " + tripId));
+
+        if (!user.getTrips().contains(trip)) {
+            throw new TripNotFoundException("Trip does not belong to the user with ID: " + userId);
+        }
+
+        user.getTrips().remove(trip);
+        userRepository.save(user);
+        tripRepository.delete(trip);
+
+        logger.info("Trip {} deleted for user {}", tripId, userId);
+    }
+
     public List<Trip> getUserTrips(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
         return user.getTrips();
     }

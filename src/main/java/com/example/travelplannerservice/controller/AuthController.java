@@ -74,10 +74,6 @@ public class AuthController {
 //                String userId = payload.getSubject();
             String email = payload.getEmail();
 //                boolean emailVerified = payload.getEmailVerified();
-            if (userService.findByUsername(email).isPresent()) {
-                User user = new User(email, "", "USER");
-                userService.saveUser(user);
-            }
             User user = new User(email, "", "USER");
             userService.saveUser(user);
             String jwt = jwtUtil.generateToken(email);

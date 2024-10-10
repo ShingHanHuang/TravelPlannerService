@@ -10,8 +10,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 
@@ -32,9 +34,6 @@ public class TripController {
 
     @PostMapping("/generate")
     public ResponseEntity<ApiResponse<String>> generateTrip(@RequestBody TripRequestDTO tripRequestDTO) {
-        logger.info("Saving trip getPreferences{}", tripRequestDTO.getPreferences());
-        logger.info("Saving trip getStartDate {}", tripRequestDTO.getTravelStartDates());
-        logger.info("Saving trip getEndDate {}", tripRequestDTO.getTravelEndDates());
         String itinerary = langchainService.generateItinerary(
                 tripRequestDTO.getDestination(),
                 tripRequestDTO.getPreferences(),
@@ -43,18 +42,32 @@ public class TripController {
                 tripRequestDTO.getTravelCompanions(),
                 tripRequestDTO.getAccommodationType()
         );
-        logger.warn("itinerary"+itinerary);
+        logger.warn("itinerary" + itinerary);
         ApiResponse<String> response = new ApiResponse<>(true, itinerary, "Itinerary generated successfully");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveTrip(@RequestParam String userId,
-                                      @RequestBody TripRequestDTO tripRequestDTO) {
+    public ResponseEntity<ApiResponse<String>> saveTrip(@RequestParam String userId,
+                                                        @RequestBody TripRequestDTO tripRequestDTO) {
         Trip trip = modelMapper.map(tripRequestDTO, Trip.class);
         String savedTripId = tripService.saveTrip(userId, trip);
         ApiResponse<String> response = new ApiResponse<>(true, savedTripId, "Trip saved successfully");
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/delete/{trip_id}")
+    public ResponseEntity<ApiResponse<Void>> deleteTrip(@PathVariable("trip_id") String tripId,
+                                                        @RequestParam("userId") String userId) {
+        try {
+            tripService.deleteTrip(userId, tripId);
+            ApiResponse<Void> response = new ApiResponse<>(true, null, "Trip saved successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error while deleting trip", e);
+            ApiResponse<Void> response = new ApiResponse<>(false, null, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
 
     @GetMapping("/list")

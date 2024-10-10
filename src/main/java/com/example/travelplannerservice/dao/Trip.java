@@ -80,6 +80,15 @@ public class Trip {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Trip) {
+            Trip trip = (Trip) obj;
+            return this.id.equals(trip.id);
+        } else
+            return false;
+    }
+
+    @Override
     public String toString() {
         return "Trip{" +
                 "id='" + id + '\'' +
