@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -42,7 +43,6 @@ public class TripController {
                 tripRequestDTO.getTravelCompanions(),
                 tripRequestDTO.getAccommodationType()
         );
-        logger.warn("itinerary" + itinerary);
         ApiResponse<String> response = new ApiResponse<>(true, itinerary, "Itinerary generated successfully");
         return ResponseEntity.ok(response);
     }
