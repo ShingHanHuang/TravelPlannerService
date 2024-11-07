@@ -39,6 +39,21 @@ public class TripService {
         return trip.getId();
     }
 
+    public void updateTrip(String userId, String tripId, Trip trip) {
+        trip.setId(tripId);
+        tripRepository.save(trip);
+        User user = userRepository.findByUsername(userId).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        List<Trip> trips = user.getTrips();
+        for (Trip trip1 : trips) {
+            logger.debug(" trip  : {}", trip1.getDestination());
+            logger.debug(" trip Id : {}", trip1.getId());
+        }
+        user.getTrips().remove(trip);
+        user.getTrips().add(trip);
+        userRepository.save(user);
+
+    }
+
     public void deleteTrip(String userId, String tripId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
@@ -62,5 +77,28 @@ public class TripService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
         return user.getTrips();
+    }
+
+    public Trip getTripById(String userId, String tripId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        logger.info("Trip id:{} ", tripId);
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new TripNotFoundException("Trip not found with ID: " + tripId));
+
+        if (!user.getTrips().contains(trip)) {
+            throw new TripNotFoundException("Trip does not belong to the user with ID: " + userId);
+        }
+        return trip;
+    }
+    public void setTripAsShared(String tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new TripNotFoundException("Trip not found with id: " + tripId));
+
+        trip.setShared(true);
+        tripRepository.save(trip);
+    }
+    public List<Trip> getAllSharedTrips() {
+        return tripRepository.findByIsShared(true);
     }
 }

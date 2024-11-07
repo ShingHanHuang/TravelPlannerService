@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -47,6 +48,7 @@ public class AuthController {
         logger.info("registerUser" + userDTO.getUsername());
         User user = new User(userDTO.getUsername(), userDTO.getPassword(), "USER");
         userService.saveUser(user);
+        logger.info("saveUser" + userDTO.getUsername());
         ApiResponse<UserDTO> response = new ApiResponse<>(true, userDTO, "User registered successfully!");
         return ResponseEntity.ok(response);
     }

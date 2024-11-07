@@ -9,7 +9,6 @@ import java.util.List;
 @Node("Trip")
 public class Trip {
 
-
     @Id
     private String id; // Trip ID
     private String destination;
@@ -17,7 +16,7 @@ public class Trip {
     private String itinerary;
     private LocalDate startDate;
     private LocalDate endDate;
-
+    private boolean isShared=false;
 
     public Trip() {
     }
@@ -79,11 +78,20 @@ public class Trip {
         this.endDate = endDate;
     }
 
+    public void setShared(boolean shared) {
+        isShared = shared;
+    }
+    public boolean isShared() {
+        return isShared;
+    }
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Trip) {
             Trip trip = (Trip) obj;
-            return this.id.equals(trip.id);
+            if (this.id == null) {
+                return false;
+            } else
+                return this.id.equals(trip.id);
         } else
             return false;
     }

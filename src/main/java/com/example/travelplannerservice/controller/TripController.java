@@ -80,4 +80,61 @@ public class TripController {
         ApiResponse<List<TripResponseDTO>> response = new ApiResponse<>(true, tripDTOs, "Trips fetched successfully");
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{trip_id}")
+    public ResponseEntity<ApiResponse<TripResponseDTO>> getTripById(@PathVariable("trip_id") String tripId,
+                                                                    @RequestParam String userId) {
+        try {
+            logger.info("tripId {}", tripId);
+            logger.info("userId {}", userId);
+            Trip trip = tripService.getTripById(userId, tripId);
+            TripResponseDTO tripDTO = modelMapper.map(trip, TripResponseDTO.class);
+            ApiResponse<TripResponseDTO> response = new ApiResponse<>(true, tripDTO, "Trip fetched successfully");
+            logger.info("tripDTO {}", tripDTO);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error fetching trip details", e);
+            ApiResponse<TripResponseDTO> response = new ApiResponse<>(false, null, "Failed to fetch trip details");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @PutMapping("/update/{trip_id}")
+    public ResponseEntity<ApiResponse<String>> updateTrip(@PathVariable("trip_id") String tripId,
+                                                          @RequestParam("userId") String userId,
+                                                          @RequestBody TripRequestDTO tripRequestDTO) {
+        try {
+            logger.error("update updating trip");
+            Trip trip = modelMapper.map(tripRequestDTO, Trip.class);
+            tripService.updateTrip(userId,tripId, trip);
+            ApiResponse<String> response = new ApiResponse<>(true, "Trip updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error updating trip", e);
+            ApiResponse<String> response = new ApiResponse<>(false, "Failed to update trip");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+    @GetMapping("/share/{trip_id}")
+    public ResponseEntity<ApiResponse<String>> shareTrip(@PathVariable("trip_id") String tripId) {
+        try {
+            logger.error("share tripId{}", tripId);
+            tripService.setTripAsShared(tripId);
+            ApiResponse<String> response = new ApiResponse<>(true, "Trip shared with all users.", "Trip shared successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error while sharing trip", e);
+            ApiResponse<String> response = new ApiResponse<>(false, null, "Failed to share trip");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    @GetMapping("/shared")
+    public ResponseEntity<ApiResponse<List<TripResponseDTO>>> getAllSharedTrips() {
+        List<Trip> sharedTrips = tripService.getAllSharedTrips();
+        List<TripResponseDTO> sharedTripDTOs = sharedTrips.stream()
+                .map(trip -> modelMapper.map(trip, TripResponseDTO.class))
+                .toList();
+        ApiResponse<List<TripResponseDTO>> response = new ApiResponse<>(true, sharedTripDTOs, "Shared trips fetched successfully");
+        return ResponseEntity.ok(response);
+    }
 }
