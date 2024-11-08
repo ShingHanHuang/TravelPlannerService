@@ -11,19 +11,21 @@ public class TripResponseDTO {
     private String itinerary;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String poster;
 
     public TripResponseDTO() {
 
     }
 
     public TripResponseDTO(String id, String destination, List<String> preferences,
-                           String itinerary, LocalDate startDate, LocalDate endDate) {
+                           String itinerary, LocalDate startDate, LocalDate endDate, String poster) {
         this.id = id;
         this.destination = destination;
         this.preferences = preferences;
         this.itinerary = itinerary;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.poster = poster;
     }
 
     public String getId() {
@@ -72,6 +74,14 @@ public class TripResponseDTO {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
     }
 }
 

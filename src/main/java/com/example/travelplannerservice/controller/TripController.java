@@ -6,6 +6,9 @@ import com.example.travelplannerservice.dao.Trip;
 import com.example.travelplannerservice.response.ApiResponse;
 import com.example.travelplannerservice.service.LangchainService;
 import com.example.travelplannerservice.service.TripService;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +109,7 @@ public class TripController {
         try {
             logger.error("update updating trip");
             Trip trip = modelMapper.map(tripRequestDTO, Trip.class);
-            tripService.updateTrip(userId,tripId, trip);
+            tripService.updateTrip(userId, tripId, trip);
             ApiResponse<String> response = new ApiResponse<>(true, "Trip updated successfully");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -115,11 +118,16 @@ public class TripController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
-    @GetMapping("/share/{trip_id}")
-    public ResponseEntity<ApiResponse<String>> shareTrip(@PathVariable("trip_id") String tripId) {
+
+    @PostMapping("/share/{trip_id}")
+    public ResponseEntity<ApiResponse<String>> shareTrip(@PathVariable("trip_id") String tripId
+            , @RequestBody String poster) {
         try {
+            if (poster.isEmpty())
+                poster = "Unknown";
+            JsonObject posterObject = JsonParser.parseString(poster).getAsJsonObject();
             logger.error("share tripId{}", tripId);
-            tripService.setTripAsShared(tripId);
+            tripService.setTripAsShared(posterObject.get("poster").getAsString(), tripId);
             ApiResponse<String> response = new ApiResponse<>(true, "Trip shared with all users.", "Trip shared successfully");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -128,6 +136,7 @@ public class TripController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
     @GetMapping("/shared")
     public ResponseEntity<ApiResponse<List<TripResponseDTO>>> getAllSharedTrips() {
         List<Trip> sharedTrips = tripService.getAllSharedTrips();

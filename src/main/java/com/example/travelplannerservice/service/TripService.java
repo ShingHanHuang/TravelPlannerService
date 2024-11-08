@@ -91,13 +91,15 @@ public class TripService {
         }
         return trip;
     }
-    public void setTripAsShared(String tripId) {
+
+    public void setTripAsShared(String poster, String tripId) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException("Trip not found with id: " + tripId));
-
+        trip.setPoster(poster);
         trip.setShared(true);
         tripRepository.save(trip);
     }
+
     public List<Trip> getAllSharedTrips() {
         return tripRepository.findByIsShared(true);
     }

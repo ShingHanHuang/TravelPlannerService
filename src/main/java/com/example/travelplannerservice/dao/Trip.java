@@ -17,6 +17,7 @@ public class Trip {
     private LocalDate startDate;
     private LocalDate endDate;
     private boolean isShared=false;
+    private String poster;
 
     public Trip() {
     }
@@ -84,6 +85,15 @@ public class Trip {
     public boolean isShared() {
         return isShared;
     }
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Trip) {
