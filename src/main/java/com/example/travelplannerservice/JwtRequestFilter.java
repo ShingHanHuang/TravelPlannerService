@@ -1,8 +1,7 @@
 package com.example.travelplannerservice;
 
 
-import com.example.travelplannerservice.config.SecurityConfig;
-import com.example.travelplannerservice.dao.User;
+import com.example.travelplannerservice.config.SecurityConfig;;
 import com.example.travelplannerservice.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,9 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {

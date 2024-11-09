@@ -57,7 +57,6 @@ public class TripService {
     public void deleteTrip(String userId, String tripId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        logger.info("Trip id:{} ", tripId);
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException("Trip not found with ID: " + tripId));
 
@@ -82,7 +81,6 @@ public class TripService {
     public Trip getTripById(String userId, String tripId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        logger.info("Trip id:{} ", tripId);
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException("Trip not found with ID: " + tripId));
 
